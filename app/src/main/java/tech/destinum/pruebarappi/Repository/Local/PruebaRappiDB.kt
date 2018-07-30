@@ -8,6 +8,6 @@ import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 @Database(entities = arrayOf(Movie::class), version = 1, exportSchema = false)
 abstract class PruebaRappiDB : RoomDatabase(){
 
-    abstract fun movbiesDAO(): MoviesDAO
+    abstract fun moviesDAO(): MoviesDAO
 
 }

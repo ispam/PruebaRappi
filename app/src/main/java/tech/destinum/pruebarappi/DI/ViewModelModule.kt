@@ -25,7 +25,6 @@ class ViewModelModule {
     }
 
     @Singleton @Provides
-    fun getMoviesVM(pruebaRappiDB: PruebaRappiDB): MoviesViewModel =
-            MoviesViewModel(pruebaRappiDB)
+    fun getMoviesVM(pruebaRappiDB: PruebaRappiDB): MoviesViewModel = MoviesViewModel(pruebaRappiDB)
 
 }
