@@ -8,6 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import tech.destinum.pruebarappi.BuildConfig
 import tech.destinum.pruebarappi.Repository.Remote.API.MoviesAPI
 import javax.inject.Singleton
 
@@ -19,20 +20,27 @@ class NetworkModule {
     }
 
     @Singleton @Provides
-    fun provideAPI(retrofit: Retrofit): MoviesAPI = retrofit.create(MoviesAPI::class.java)
+    fun provideAPI(retrofit: Retrofit): MoviesAPI  = retrofit.create(MoviesAPI::class.java)
 
     @Singleton @Provides
-    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+    fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient{
+        return if (BuildConfig.DEBUG){
             OkHttpClient.Builder()
                     .addInterceptor(httpLoggingInterceptor)
                     .build()
+        } else {
+            OkHttpClient.Builder()
+                    .build()
+        }
+    }
+
 
     @Singleton @Provides
     fun provideLogginInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger {
-            message -> Log.v("Logging Interceptor", message)
+            message -> Log.v("LogginInterceptor", message)
         })
-        interceptor.level = HttpLoggingInterceptor.Level.BASIC
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
         return  interceptor
     }
 

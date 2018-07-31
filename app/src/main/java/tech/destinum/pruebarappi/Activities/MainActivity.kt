@@ -2,19 +2,20 @@ package tech.destinum.pruebarappi.Activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import tech.destinum.pruebarappi.Adapters.MoviesAdapter
 import tech.destinum.pruebarappi.R
+import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import tech.destinum.pruebarappi.Repository.MoviesRepository
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        private val TAG = MainActivity::class.java.simpleName
-    }
-
     private val mDisposable: CompositeDisposable = CompositeDisposable()
+    private lateinit var recyclerView: RecyclerView
 
     @Inject
     lateinit var repository: MoviesRepository
@@ -24,8 +25,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         App.component.inject(this)
 
+        recyclerView = findViewById(R.id.movies_recycler_view)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
+
         mDisposable.add(repository.getMovies()
                 .subscribeOn(Schedulers.io())
+//                .doOnNext { recyclerView.adapter = MoviesAdapter(it as List<Movie>) }
                 .subscribe())
 
     }
