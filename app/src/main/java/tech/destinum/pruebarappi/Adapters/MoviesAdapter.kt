@@ -1,5 +1,7 @@
 package tech.destinum.pruebarappi.Adapters
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
@@ -10,12 +12,13 @@ import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
+import tech.destinum.pruebarappi.Activities.DetailsActivity
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MoviesAdapter(private val moviesList: List<Any>): RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
+class MoviesAdapter(private val moviesList: List<Any>, private val activity: Activity): RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesAdapter.ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.format_movie, parent, false))
@@ -28,6 +31,13 @@ class MoviesAdapter(private val moviesList: List<Any>): RecyclerView.Adapter<Mov
     override fun onBindViewHolder(holder: MoviesAdapter.ViewHolder, position: Int) {
         val movie = moviesList[position]
         holder.bind(movie as Movie)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(activity, DetailsActivity::class.java)
+            intent.putExtra("movie", movie)
+            activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
+        }
     }
 
     inner class ViewHolder(v: View): RecyclerView.ViewHolder(v){
@@ -38,15 +48,14 @@ class MoviesAdapter(private val moviesList: List<Any>): RecyclerView.Adapter<Mov
         private var mCL: ConstraintLayout = v.findViewById(R.id.format_movie_CL)
 
         fun bind(movie: Movie){
-
             mCL.setBackgroundColor(Color.parseColor(getColor(Random().nextInt(15))))
+
             val sdf1 = SimpleDateFormat("yyyy-mm-dd")
             val newDate= sdf1.parse(movie.releaseDate)
-
             val sdf2 = SimpleDateFormat("d MMM - yyyy")
 
-            title.text = movie.title
             release.text = sdf2.format(newDate)
+            title.text = movie.title
 
             // Need onPreDraw Listener to get actual width and height.
             val vto = image.viewTreeObserver

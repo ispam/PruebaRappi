@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         mDisposable.add(moviesVM.getMovies()
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess {
-                    recyclerView.adapter = MoviesAdapter(it)
+                    recyclerView.adapter = MoviesAdapter(it, this)
                 }
                 .subscribe())
 

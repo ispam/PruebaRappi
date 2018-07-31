@@ -28,6 +28,9 @@ android {
         }
     }
 }
+androidExtensions {
+    experimental = true
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -76,7 +79,6 @@ dependencies {
 
     // Image and Photos
     implementation 'com.squareup.picasso:picasso:2.71828'
-
 
 
 }
