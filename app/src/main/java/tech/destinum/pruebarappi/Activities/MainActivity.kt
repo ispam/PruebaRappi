@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import tech.destinum.pruebarappi.Adapters.MoviesAdapter
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
+import tech.destinum.pruebarappi.Repository.Local.ViewModels.MoviesViewModel
 import tech.destinum.pruebarappi.Repository.MoviesRepository
 import javax.inject.Inject
 
@@ -16,6 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     private val mDisposable: CompositeDisposable = CompositeDisposable()
     private lateinit var recyclerView: RecyclerView
+
+    @Inject
+    lateinit var moviesVM: MoviesViewModel
 
     @Inject
     lateinit var repository: MoviesRepository
@@ -28,10 +32,19 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.movies_recycler_view)
         recyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        mDisposable.add(repository.getMovies()
+        mDisposable.add(moviesVM.getMovies()
                 .subscribeOn(Schedulers.io())
-//                .doOnNext { recyclerView.adapter = MoviesAdapter(it as List<Movie>) }
+                .doOnSuccess {
+                    recyclerView.adapter = MoviesAdapter(it)
+                }
                 .subscribe())
+
+//        mDisposable.add(repository.getMovies()
+//                .subscribeOn(Schedulers.io())
+//                .doOnNext {
+//                    //                    recyclerView.adapter = MoviesAdapter(it)
+//                }
+//                .subscribe())
 
     }
 }

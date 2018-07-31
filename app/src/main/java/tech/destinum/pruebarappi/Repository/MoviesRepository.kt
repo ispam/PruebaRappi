@@ -30,8 +30,6 @@ class MoviesRepository @Inject constructor(private val moviesAPI: MoviesAPI, pri
 
                             override fun onResponse(call: Call<Result>, response: Response<Result>) {
 
-//                                Log.i("provideAPI", response!!.body().toString())
-
                                 val movies = response.body()!!.mMovies
 
                                 val mutableList: MutableList<Movie> = ArrayList()
