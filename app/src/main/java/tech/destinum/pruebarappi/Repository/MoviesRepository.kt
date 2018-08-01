@@ -27,6 +27,13 @@ class MoviesRepository @Inject constructor(private val moviesAPI: MoviesAPI, pri
                 getMoviesFromAPI(page, callback, category))
     }
 
+    fun searchOnline(query: String, callback: GetMoviesCallback): Observable<MoviesResult>{
+        return moviesAPI.searchOnline(API_KEY, LANG, query, 1)
+                .doOnNext {
+                    addMovies(it, callback, 1, "search")
+                }
+    }
+
     private fun getMoviesFromAPI(page: Int, callback: GetMoviesCallback, category: String): Observable<MoviesResult> =
 
             when (category) {

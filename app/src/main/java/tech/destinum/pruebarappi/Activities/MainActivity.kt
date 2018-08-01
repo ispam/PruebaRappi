@@ -49,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-
         if (!mDisposable.isDisposed) mDisposable.clear()
     }
 
@@ -145,12 +144,25 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 val newQuery = "%$newText%"
 
-                mDisposable.add(moviesVM.getTitleCursor(newQuery)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSuccess {
-                            searchView.suggestionsAdapter = MoviesCursorAdapter(this@MainActivity, it, moviesVM, mDisposable)
-                        }.subscribe())
+                if (!isOnline(this@MainActivity)) {
+                    getCursor(newQuery, searchView)
+                } else {
+
+                    getCursor(newQuery, searchView)
+
+                    mDisposable.add(repository.searchOnline(newQuery, object : GetMoviesCallback{
+                                override fun onSuccess(page: Int, movies: MutableList<Movie>) {
+
+                                }
+
+                                override fun onError() {
+                                    Toast.makeText(this@MainActivity, "Please check your internet connection.", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe())
+                }
                 return true
             }
 
@@ -186,6 +198,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    fun getCursor(newQuery: String, searchView: SearchView){
+        mDisposable.add(moviesVM.getTitleCursor(newQuery)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSuccess {
+                    searchView.suggestionsAdapter = MoviesCursorAdapter(this@MainActivity, it, moviesVM, mDisposable)
+                }.subscribe())
     }
 
 

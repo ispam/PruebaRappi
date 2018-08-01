@@ -2,7 +2,6 @@ package tech.destinum.pruebarappi.Repository.Local.ViewModels
 
 import android.database.Cursor
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import tech.destinum.pruebarappi.Repository.Local.PruebaRappiDB
@@ -20,7 +19,10 @@ class MoviesViewModel @Inject constructor(private val pruebaRappiDB: PruebaRappi
             pruebaRappiDB.moviesDAO().getMovies(category)
 
     fun getTitleCursor(query: String): Single<Cursor> =
-            Single.fromCallable { pruebaRappiDB.moviesDAO().getDealsCursor(query) }
+            Single.fromCallable { pruebaRappiDB.moviesDAO().getMoviesCursor(query) }
+
+    fun getOnlineCursor(query: String): Single<Cursor> =
+            Single.fromCallable { pruebaRappiDB.moviesDAO().getOnlineCursor(query) }
 
     fun getMovie(title: String): Single<Movie> =
             pruebaRappiDB.moviesDAO().getMovie(title)

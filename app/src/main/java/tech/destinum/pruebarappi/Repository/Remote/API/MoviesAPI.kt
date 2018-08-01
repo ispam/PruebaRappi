@@ -31,4 +31,13 @@ interface MoviesAPI {
     ): Observable<MoviesResult>
 
 
+    @GET("search/movie")
+    fun searchOnline(
+            @Query("api_key") apiKey: String,
+            @Query("language") language: String,
+            @Query("query") query: String,
+            @Query("page") page: Int
+    ): Observable<MoviesResult>
+
+
 }
