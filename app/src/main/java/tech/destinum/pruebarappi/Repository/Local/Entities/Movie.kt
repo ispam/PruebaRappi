@@ -29,5 +29,6 @@ data class Movie(
         var overview: String? = null,
         @SerializedName("release_date")
         @Expose
-        var releaseDate: String? = null) : Parcelable
+        var releaseDate: String? = null,
+        var page: Int) : Parcelable
 

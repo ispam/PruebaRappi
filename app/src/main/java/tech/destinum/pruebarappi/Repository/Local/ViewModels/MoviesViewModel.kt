@@ -18,8 +18,5 @@ class MoviesViewModel @Inject constructor(private val pruebaRappiDB: PruebaRappi
     fun getMovies(): Single<List<Movie>> =
             pruebaRappiDB.moviesDAO().getMovies()
 
-    fun getFlowableMovies(): Flowable<List<Movie>> =
-            pruebaRappiDB.moviesDAO().getFlowableMovies()
-
 
 }

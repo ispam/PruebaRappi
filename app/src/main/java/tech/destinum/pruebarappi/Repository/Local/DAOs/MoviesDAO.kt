@@ -17,7 +17,7 @@ interface MoviesDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllMovies(movies: List<Movie>)
 
-    @Query("select * from movies")
+    @Query("select * from movies order by page asc")
     fun getMovies(): Single<List<Movie>>
 
     @Query("select * from movies")

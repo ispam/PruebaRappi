@@ -18,4 +18,5 @@ class AppModule(private val application: App) {
     @Singleton @Provides
     fun provideRepository(moviesAPI: MoviesAPI, moviesVM: MoviesViewModel): MoviesRepository =
             MoviesRepository(moviesAPI, moviesVM)
+
 }

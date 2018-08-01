@@ -1,5 +1,7 @@
 package tech.destinum.pruebarappi.Activities
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -19,15 +21,7 @@ import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.activity_main.*
 import tech.destinum.pruebarappi.Repository.Remote.API.GetMoviesCallback
-import android.support.v7.widget.LinearLayoutManager
-
-
-
-
-
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,14 +45,6 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.movies_recycler_view)
 
-
-//        mDisposable.add(moviesVM.getFlowableMovies()
-//                .subscribeOn(Schedulers.io())
-//                .doOnNext {
-//                    recyclerView.adapter = MoviesAdapter(it, this)
-//                }
-//                .subscribe())
-
         initializeRecycler(currentPage)
 
         setupOnScrollListener()
@@ -66,26 +52,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeRecycler(page: Int){
-        mDisposable.add(repository.getMovies(page, object : GetMoviesCallback{
-                    override fun onSuccess(page: Int, movies: MutableList<Movie>) {
 
-                        if (adapter == null) {
-                            adapter = MoviesAdapter(movies, this@MainActivity)
-                            recyclerView.adapter = adapter
-                        } else{
-                            adapter?.appendMovies(movies)
+        if (isOnline(this@MainActivity)) {
+
+            mDisposable.add(repository.getPopularMovies(page, object : GetMoviesCallback{
+                        override fun onSuccess(page: Int, movies: MutableList<Movie>) {
+                               if (adapter == null) {
+                                   adapter = MoviesAdapter(movies, this@MainActivity)
+                                   recyclerView.adapter = adapter
+                               } else{
+                                   adapter?.appendMovies(movies)
+                               }
+                               currentPage = page
+                               isFetching = false
                         }
+                        override fun onError() {
+                            Toast.makeText(this@MainActivity, "Please check your internet connection.", Toast.LENGTH_SHORT).show()
 
-                        currentPage = page
-                        isFetching = false
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe())
 
+            } else {
+
+            mDisposable.add(moviesVM.getMovies()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSuccess {
+                        adapter = MoviesAdapter(it as MutableList<Movie>, this@MainActivity)
+                        recyclerView.adapter = adapter
+
+                        println(it.size)
                     }
-                    override fun onError() {
-                        Toast.makeText(this@MainActivity, "Please check your internet connection.", Toast.LENGTH_SHORT).show()
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .subscribe())
+                    .subscribe())
+        }
     }
     private fun setupOnScrollListener() {
 
@@ -109,7 +111,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun getMovies(page: Int) {
         isFetching = true
-       initializeRecycler(page)
+        initializeRecycler(page)
+    }
+
+    private fun isOnline(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = cm.activeNetworkInfo
+        return netInfo != null && netInfo.isConnectedOrConnecting
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -127,7 +135,7 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                Toast.makeText(view!!.context, "${position + 1}", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(view!!.context, "${position + 1}", Toast.LENGTH_SHORT).show()
             }
         }
 

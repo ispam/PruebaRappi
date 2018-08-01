@@ -1,6 +1,8 @@
 package tech.destinum.pruebarappi.Activities
 
 import android.app.Application
+import android.content.Context
+import android.util.Log
 import tech.destinum.pruebarappi.DI.AppComponent
 import tech.destinum.pruebarappi.DI.AppModule
 import tech.destinum.pruebarappi.DI.DaggerAppComponent
@@ -19,4 +21,7 @@ class App: Application() {
                 .build()
 
     }
+
+
+
 }

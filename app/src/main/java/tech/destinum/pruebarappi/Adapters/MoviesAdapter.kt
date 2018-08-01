@@ -53,6 +53,7 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
         private var mCL: ConstraintLayout = v.findViewById(R.id.format_movie_CL)
 
         fun bind(movie: Movie){
+
             mCL.setBackgroundColor(Color.parseColor(getColor(Random().nextInt(15))))
 
             val sdf1 = SimpleDateFormat("yyyy-mm-dd")
@@ -61,7 +62,6 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
 
             release.text = sdf2.format(newDate)
             title.text = movie.title
-//            release.text = ""
 
             // Need onPreDraw Listener to get actual width and height.
             val vto = image.viewTreeObserver

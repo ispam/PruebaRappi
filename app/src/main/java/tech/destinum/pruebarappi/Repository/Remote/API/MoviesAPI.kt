@@ -15,12 +15,26 @@ interface MoviesAPI {
     @GET("upcoming?api_key=f38421ff3159b2d07010419fc5b52d04&language=en-US&page={page}")
     fun getUpcomingMovies(@Path("page")page: Int): Call<MoviesResult>
 
+    @GET("movie/top_rated")
+    fun getTopRatedMovies(
+            @Query("api_key") apiKey: String,
+            @Query("language") language: String,
+            @Query("page") page: Int
+    ): Observable<MoviesResult>
+
+    @GET("movie/upcoming")
+    fun getUpcomingMovies(
+            @Query("api_key") apiKey: String,
+            @Query("language") language: String,
+            @Query("page") page: Int
+    ): Observable<MoviesResult>
+
     @GET("movie/popular")
     fun getPopularMovies(
             @Query("api_key") apiKey: String,
             @Query("language") language: String,
             @Query("page") page: Int
-    ): Call<MoviesResult>
+    ): Observable<MoviesResult>
 
 
 }
