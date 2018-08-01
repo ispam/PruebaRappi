@@ -3,7 +3,7 @@ package tech.destinum.pruebarappi.Repository.Local.Entities
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class Result {
+class MoviesResult {
 
     @SerializedName("page")
     @Expose
@@ -16,6 +16,6 @@ class Result {
     var totalPages: Int? = null
     @SerializedName("results")
     @Expose
-    var mMovies: List<Movie>? = null
+    var movies: List<Movie>? = null
 
 }

@@ -1,6 +1,7 @@
 package tech.destinum.pruebarappi.Repository.Local.ViewModels
 
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import tech.destinum.pruebarappi.Repository.Local.PruebaRappiDB
@@ -16,6 +17,9 @@ class MoviesViewModel @Inject constructor(private val pruebaRappiDB: PruebaRappi
 
     fun getMovies(): Single<List<Movie>> =
             pruebaRappiDB.moviesDAO().getMovies()
+
+    fun getFlowableMovies(): Flowable<List<Movie>> =
+            pruebaRappiDB.moviesDAO().getFlowableMovies()
 
 
 }

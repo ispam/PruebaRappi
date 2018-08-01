@@ -18,19 +18,19 @@ import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MoviesAdapter(private val moviesList: List<Any>, private val activity: Activity): RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
+class MoviesAdapter(private val moviesList: MutableList<Movie>, private val activity: Activity): RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoviesAdapter.ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.format_movie, parent, false))
     }
 
     override fun getItemCount(): Int {
-        return moviesList?.size ?: 0
+        return moviesList.size
     }
 
     override fun onBindViewHolder(holder: MoviesAdapter.ViewHolder, position: Int) {
         val movie = moviesList[position]
-        holder.bind(movie as Movie)
+        holder.bind(movie)
 
         holder.itemView.setOnClickListener {
             val intent = Intent(activity, DetailsActivity::class.java)
@@ -38,6 +38,11 @@ class MoviesAdapter(private val moviesList: List<Any>, private val activity: Act
             activity.startActivity(intent)
             activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
         }
+    }
+
+    fun appendMovies(moviesToAppend: List<Movie>) {
+        moviesList.addAll(moviesToAppend)
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(v: View): RecyclerView.ViewHolder(v){
@@ -56,6 +61,7 @@ class MoviesAdapter(private val moviesList: List<Any>, private val activity: Act
 
             release.text = sdf2.format(newDate)
             title.text = movie.title
+//            release.text = ""
 
             // Need onPreDraw Listener to get actual width and height.
             val vto = image.viewTreeObserver

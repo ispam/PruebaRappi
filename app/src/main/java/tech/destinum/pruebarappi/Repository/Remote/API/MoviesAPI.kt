@@ -1,11 +1,26 @@
 package tech.destinum.pruebarappi.Repository.Remote.API
 
+import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.http.GET
-import tech.destinum.pruebarappi.Repository.Local.Entities.Result
+import retrofit2.http.Path
+import retrofit2.http.Query
+import tech.destinum.pruebarappi.Repository.Local.Entities.MoviesResult
 
 interface MoviesAPI {
 
-    @GET("popular?api_key=f38421ff3159b2d07010419fc5b52d04")
-    fun getMovies(): Call<Result>
+    @GET("top_rated?api_key=f38421ff3159b2d07010419fc5b52d04&language=en-US&page={page}")
+    fun getTopRatedMovies(@Path("page")page: Int): Call<MoviesResult>
+
+    @GET("upcoming?api_key=f38421ff3159b2d07010419fc5b52d04&language=en-US&page={page}")
+    fun getUpcomingMovies(@Path("page")page: Int): Call<MoviesResult>
+
+    @GET("movie/popular")
+    fun getPopularMovies(
+            @Query("api_key") apiKey: String,
+            @Query("language") language: String,
+            @Query("page") page: Int
+    ): Call<MoviesResult>
+
+
 }

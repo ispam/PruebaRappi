@@ -5,7 +5,7 @@ import org.junit.Test
 import org.junit.Assert.*
 
 /**
- * Result local unit test, which will execute on the development machine (host).
+ * MoviesResult local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */

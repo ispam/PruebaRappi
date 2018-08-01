@@ -10,63 +10,65 @@ import javax.inject.Inject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import tech.destinum.pruebarappi.Repository.Local.Entities.Result
+import tech.destinum.pruebarappi.Repository.Local.Entities.MoviesResult
+import tech.destinum.pruebarappi.Repository.Remote.API.GetMoviesCallback
 
 class MoviesRepository @Inject constructor(private val moviesAPI: MoviesAPI, private val moviesVM: MoviesViewModel) {
 
-    fun getMovies(): Observable<Any> {
-        return Observable.concatArray(
+
+    companion object {
+        const val API_KEY = "f38421ff3159b2d07010419fc5b52d04"
+        const val LANG = "en-US"
+    }
+    fun getMovies(page: Int, callback: GetMoviesCallback): Observable<Any> {
+        return Observable.concatArrayEager(
                 getMoviesFromDB(),
-                getMoviesFromAPI())
+                getMoviesFromAPI(page, callback))
     }
 
-    private fun getMoviesFromAPI(): Observable<Call<Result>> =
-            Observable.just(moviesAPI.getMovies())
+    private fun getMoviesFromAPI(page: Int, callback: GetMoviesCallback): Observable<Call<MoviesResult>> =
+            Observable.just(moviesAPI.getPopularMovies(API_KEY, LANG, page))
                     .doOnNext {
 
-                        val call: Call<Result> = it
-                        call.enqueue(object : Callback<Result> {
-                            override fun onFailure(call: Call<Result>?, t: Throwable?) {}
+                        val call: Call<MoviesResult> = it
+                        call.enqueue(object : Callback<MoviesResult> {
+                            override fun onFailure(call: Call<MoviesResult>?, t: Throwable?) {
+                            }
 
-                            override fun onResponse(call: Call<Result>, response: Response<Result>) {
+                            override fun onResponse(call: Call<MoviesResult>, response: Response<MoviesResult>) {
 
-                                val movies = response.body()!!.mMovies
+                                if (response.isSuccessful){
+                                    val moviesResult = response.body()
+                                    if (moviesResult?.movies != null){
+                                        callback.onSuccess(moviesResult.page!!, moviesResult.movies as MutableList<Movie>)
 
-                                val mutableList: MutableList<Movie> = ArrayList()
-
-                                for (movie in movies as List<Movie>){
-                                    val voteCount: Int? = movie.voteCount
-                                    val id: Int? = movie.id
-                                    val video: Boolean? = movie.video
-                                    val voteAverage: Double? = movie.voteAverage
-                                    val title: String? = movie.title
-                                    val popularity: Double? = movie.popularity
-                                    val posterPath: String? = movie.posterPath
-                                    val originalLanguage: String? = movie.originalLanguage
-                                    val originalTitle: String? = movie.originalTitle
-                                    val backdropPath: String? = movie.backdropPath
-                                    val adult: Boolean? = movie.adult
-                                    val overview: String? = movie.overview
-                                    val releaseDate: String? = movie.releaseDate
-
-                                    val movieEntity = Movie(voteCount,id, video, voteAverage, title, popularity, posterPath, originalLanguage, originalTitle, backdropPath, adult, overview, releaseDate)
-                                    mutableList.add(movie)
-                                    println(movieEntity.title)
+                                        val mutableList: MutableList<Movie> = ArrayList()
+                                        for (movie in moviesResult.movies as MutableList<Movie>){
+                                            mutableList.add(movie)
+                                        }
+                                        storeMoviesInDB(mutableList)
+                                    } else {
+                                        callback.onError()
+                                    }
+                                } else {
+                                    getMoviesFromDB()
+                                    callback.onError()
                                 }
-
-                                storeMoviesInDB(mutableList)
                             }
                         })
                     }
 
-    private fun storeMoviesInDB(movies: List<Movie>) {
-            moviesVM.createAll(movies).subscribeOn(Schedulers.io())
-                    .doOnComplete { Log.i("storeMoviesInDB", "${movies.size}") }
-                    .subscribe()
-    }
+
 
     private fun getMoviesFromDB(): Observable<List<Movie>> =
             moviesVM.getMovies().filter { it.isNotEmpty() }
                     .toObservable()
                     .doOnNext { Log.i("getMoviesFromDB", "${it.size}") }
+
+
+    private fun storeMoviesInDB(movies: List<Movie>) {
+                moviesVM.createAll(movies).subscribeOn(Schedulers.io())
+                        .doOnComplete { Log.i("storeMoviesInDB", "${movies.size}") }
+                        .subscribe()
+            }
 }

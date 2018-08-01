@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">PruebaRappi</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+
+    <string-array name="categories">
+        <item>Popular</item>
+        <item>Top Rated</item>
+        <item>Upcoming</item>
+    </string-array>
 </resources>
