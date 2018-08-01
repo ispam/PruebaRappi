@@ -1,5 +1,6 @@
 package tech.destinum.pruebarappi.Repository.Local.Entities
 
+import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import android.os.Parcelable
@@ -14,6 +15,7 @@ data class Movie(
         @SerializedName("id")
         @Expose
         @PrimaryKey(autoGenerate = false)
+        @ColumnInfo(name = "_id")
         var id: Int? = null,
         @SerializedName("vote_average")
         @Expose
@@ -30,5 +32,6 @@ data class Movie(
         @SerializedName("release_date")
         @Expose
         var releaseDate: String? = null,
-        var page: Int) : Parcelable
+        var page: Int,
+        var category: String) : Parcelable
 

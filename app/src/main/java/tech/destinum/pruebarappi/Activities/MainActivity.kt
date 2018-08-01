@@ -14,14 +14,13 @@ import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 import tech.destinum.pruebarappi.Repository.Local.ViewModels.MoviesViewModel
 import tech.destinum.pruebarappi.Repository.MoviesRepository
 import javax.inject.Inject
-import android.widget.ArrayAdapter
 import android.view.Menu
 import android.view.View
-import android.widget.AdapterView
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import tech.destinum.pruebarappi.Repository.Remote.API.GetMoviesCallback
+import android.app.SearchManager
+import tech.destinum.pruebarappi.Adapters.MoviesCursorAdapter
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,14 +43,23 @@ class MainActivity : AppCompatActivity() {
         App.component.inject(this)
 
         recyclerView = findViewById(R.id.movies_recycler_view)
-
-        initializeRecycler(currentPage)
-
-        setupOnScrollListener()
+        initializeRecycler(currentPage, CATEGORY.POPULAR.value)
 
     }
 
-    private fun initializeRecycler(page: Int){
+    override fun onStop() {
+        super.onStop()
+
+        if (!mDisposable.isDisposed) mDisposable.clear()
+    }
+
+    enum class CATEGORY(val value: String) {
+        POPULAR("popular"),
+        TOP_RATED("top_rated"),
+        UPCOMING("upcoming")
+    }
+
+    private fun initializeRecycler(page: Int, category: String){
 
         if (isOnline(this@MainActivity)) {
 
@@ -61,6 +69,9 @@ class MainActivity : AppCompatActivity() {
                                    adapter = MoviesAdapter(movies, this@MainActivity)
                                    recyclerView.adapter = adapter
                                } else{
+                                   if (page == 1){
+                                       adapter?.clearMovies()
+                                   }
                                    adapter?.appendMovies(movies)
                                }
                                currentPage = page
@@ -70,26 +81,25 @@ class MainActivity : AppCompatActivity() {
                             Toast.makeText(this@MainActivity, "Please check your internet connection.", Toast.LENGTH_SHORT).show()
 
                         }
-                    })
+                    }, category)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe())
 
             } else {
 
-            mDisposable.add(moviesVM.getMovies()
+            mDisposable.add(moviesVM.getMovies(category)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSuccess {
                         adapter = MoviesAdapter(it as MutableList<Movie>, this@MainActivity)
                         recyclerView.adapter = adapter
-
                         println(it.size)
                     }
                     .subscribe())
         }
     }
-    private fun setupOnScrollListener() {
+    private fun setupOnScrollListener(category: String) {
 
         val glm =  GridLayoutManager(this, 2)
         recyclerView.layoutManager = glm
@@ -102,16 +112,16 @@ class MainActivity : AppCompatActivity() {
 
                 if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
                     if (!isFetching) {
-                        getMovies(currentPage + 1)
+                        getMovies((currentPage + 1), category)
                     }
                 }
             }
         })
     }
 
-    private fun getMovies(page: Int) {
+    private fun getMovies(page: Int, category: String) {
         isFetching = true
-        initializeRecycler(page)
+        initializeRecycler(page, category)
     }
 
     private fun isOnline(context: Context): Boolean {
@@ -122,6 +132,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_toolbar, menu)
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView = menu.findItem(R.id.app_bar_search).actionView as SearchView
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val newQuery = "%$newText%"
+
+                mDisposable.add(moviesVM.getTitleCursor(newQuery)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSuccess {
+                            searchView.suggestionsAdapter = MoviesCursorAdapter(this@MainActivity, it, moviesVM, mDisposable)
+                        }.subscribe())
+                return true
+            }
+
+        })
 
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
@@ -135,11 +168,25 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                Toast.makeText(view!!.context, "${position + 1}", Toast.LENGTH_SHORT).show()
+
+                when (position){
+                    0 -> {
+                        initializeRecycler(1, CATEGORY.POPULAR.value)
+                        setupOnScrollListener(CATEGORY.POPULAR.value)
+                    }
+                    1 -> {
+                        initializeRecycler(1, CATEGORY.TOP_RATED.value)
+                        setupOnScrollListener(CATEGORY.TOP_RATED.value)
+                    }
+                    2 -> {
+                        initializeRecycler(1, CATEGORY.UPCOMING.value)
+                        setupOnScrollListener(CATEGORY.UPCOMING.value)
+                    }
+                }
             }
         }
-
         return true
     }
+
 
 }

@@ -8,19 +8,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import tech.destinum.pruebarappi.Activities.App
 import tech.destinum.pruebarappi.BuildConfig
 import tech.destinum.pruebarappi.Repository.Remote.API.MoviesAPI
 import java.io.File
 import javax.inject.Singleton
-import android.net.NetworkInfo
 import okhttp3.*
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import android.net.ConnectivityManager
-
-
-
 
 @Module(includes = arrayOf(AppModule::class))
 class NetworkModule {

@@ -5,18 +5,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.squareup.picasso.Picasso
 import tech.destinum.pruebarappi.Activities.DetailsActivity
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
-import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MoviesAdapter(private val moviesList: MutableList<Movie>, private val activity: Activity): RecyclerView.Adapter<MoviesAdapter.ViewHolder>() {
 
@@ -33,6 +35,9 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
         holder.bind(movie)
 
         holder.itemView.setOnClickListener {
+
+            movie.category = "something"
+//            Toast.makeText(holder.itemView.context, movie.category, Toast.LENGTH_SHORT).show()
             val intent = Intent(activity, DetailsActivity::class.java)
             intent.putExtra("movie", movie)
             activity.startActivity(intent)
@@ -45,23 +50,26 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
         notifyDataSetChanged()
     }
 
+    fun clearMovies() {
+        moviesList.clear()
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(v: View): RecyclerView.ViewHolder(v){
 
         private var image: ImageView = v.findViewById(R.id.format_movie_image)
         private var title: TextView = v.findViewById(R.id.format_movie_title)
-        private var release: TextView = v.findViewById(R.id.format_movie_released)
+        private var rating: TextView = v.findViewById(R.id.format_movie_rating)
         private var mCL: ConstraintLayout = v.findViewById(R.id.format_movie_CL)
 
         fun bind(movie: Movie){
 
             mCL.setBackgroundColor(Color.parseColor(getColor(Random().nextInt(15))))
 
-            val sdf1 = SimpleDateFormat("yyyy-mm-dd")
-            val newDate= sdf1.parse(movie.releaseDate)
-            val sdf2 = SimpleDateFormat("d MMM - yyyy")
-
-            release.text = sdf2.format(newDate)
+            rating.text = movie.voteAverage.toString()
             title.text = movie.title
+
+//            Log.v("bind", movie.category)
 
             // Need onPreDraw Listener to get actual width and height.
             val vto = image.viewTreeObserver

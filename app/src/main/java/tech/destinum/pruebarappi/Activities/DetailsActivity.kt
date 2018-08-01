@@ -9,7 +9,6 @@ import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
-import java.text.SimpleDateFormat
 
 class DetailsActivity : AppCompatActivity() {
 
@@ -37,16 +36,11 @@ class DetailsActivity : AppCompatActivity() {
         title.text = movie.title
         rating.text = movie.voteAverage.toString()
         overview.text = movie.overview
-
-        //Change date format
-        val sdf1 = SimpleDateFormat("yyyy-mm-dd")
-        val newDate= sdf1.parse(movie.releaseDate)
-        val sdf2 = SimpleDateFormat("MMMM - yyyy")
-        released.text = sdf2.format(newDate)
+        released.text = movie.releaseDate
+        movie.category
 
         Picasso.get().load("http://image.tmdb.org/t/p/w500/"+movie.posterPath)
                 .fit()
-                .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(image)
     }
 
