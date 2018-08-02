@@ -25,6 +25,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <com.ldoublem.loadingviewlib.view.LVBlock
+                android:id="@+id/lvBlock2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/details_image"
+                app:layout_constraintEnd_toEndOf="@+id/details_image"
+                app:layout_constraintStart_toStartOf="@+id/details_image"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <ImageView
                 android:id="@+id/details_image"
                 android:layout_width="150dp"
