@@ -24,9 +24,6 @@ interface MoviesDAO {
     @Query("select * from movies where title LIKE :title")
     fun getMoviesCursor(title: String): Cursor
 
-    @Query("select * from movies where title LIKE :title order by category")
-    fun getOnlineCursor(title: String): Cursor
-
     @Query("select * from movies where title = :title")
     fun getMovie(title: String): Single<Movie>
 

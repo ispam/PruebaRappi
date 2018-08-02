@@ -13,10 +13,13 @@ import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.ldoublem.loadingviewlib.view.LVBlock
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import tech.destinum.pruebarappi.Activities.DetailsActivity
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
+import java.lang.Exception
 import java.util.*
 
 
@@ -61,8 +64,13 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
         private var title: TextView = v.findViewById(R.id.format_movie_title)
         private var rating: TextView = v.findViewById(R.id.format_movie_rating)
         private var mCL: ConstraintLayout = v.findViewById(R.id.format_movie_CL)
+        private var mLVBlock: LVBlock = v.findViewById(R.id.lvBlock)
 
         fun bind(movie: Movie){
+
+            mLVBlock.visibility = View.VISIBLE
+            mLVBlock.isShadow(false)
+            mLVBlock.startAnim()
 
             mCL.setBackgroundColor(Color.parseColor(getColor(Random().nextInt(15))))
 
@@ -80,9 +88,19 @@ class MoviesAdapter(private val moviesList: MutableList<Movie>, private val acti
                     val finalWidth = image.measuredWidth
                     Picasso.get().load("http://image.tmdb.org/t/p/w500/"+movie.posterPath)
                             .fit()
+//                            .placeholder(R.drawable.placeholder)
 //                            .centerCrop()
 //                            .resize(finalWidth, finalHeight)
-                            .into(image)
+                            .into(image, object : Callback{
+                                override fun onSuccess() {
+                                    mLVBlock.stopAnim()
+                                    mLVBlock.visibility = View.GONE
+                                }
+
+                                override fun onError(e: Exception?) {
+                                }
+
+                            })
 
                     return true
                 }

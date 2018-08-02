@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import tech.destinum.pruebarappi.R
 import tech.destinum.pruebarappi.Repository.Local.Entities.Movie
 
+
 class DetailsActivity : AppCompatActivity() {
+
 
     private lateinit var title: TextView
     private lateinit var rating: TextView
@@ -41,7 +42,9 @@ class DetailsActivity : AppCompatActivity() {
 
         Picasso.get().load("http://image.tmdb.org/t/p/w500/"+movie.posterPath)
                 .fit()
+//                .placeholder(R.drawable.placeholder)
                 .into(image)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

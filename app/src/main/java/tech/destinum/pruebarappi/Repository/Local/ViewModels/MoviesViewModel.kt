@@ -21,12 +21,7 @@ class MoviesViewModel @Inject constructor(private val pruebaRappiDB: PruebaRappi
     fun getTitleCursor(query: String): Single<Cursor> =
             Single.fromCallable { pruebaRappiDB.moviesDAO().getMoviesCursor(query) }
 
-    fun getOnlineCursor(query: String): Single<Cursor> =
-            Single.fromCallable { pruebaRappiDB.moviesDAO().getOnlineCursor(query) }
-
     fun getMovie(title: String): Single<Movie> =
             pruebaRappiDB.moviesDAO().getMovie(title)
-
-
 
 }

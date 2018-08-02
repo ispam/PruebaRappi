@@ -1,7 +1,6 @@
 package tech.destinum.pruebarappi.Repository.Remote.API
 
 import io.reactivex.Observable
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -30,7 +29,6 @@ interface MoviesAPI {
             @Query("page") page: Int
     ): Observable<MoviesResult>
 
-
     @GET("search/movie")
     fun searchOnline(
             @Query("api_key") apiKey: String,
@@ -38,6 +36,5 @@ interface MoviesAPI {
             @Query("query") query: String,
             @Query("page") page: Int
     ): Observable<MoviesResult>
-
 
 }

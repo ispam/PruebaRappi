@@ -1,6 +1,7 @@
 package tech.destinum.pruebarappi.DI
 
 import dagger.Component
+import tech.destinum.pruebarappi.Activities.DetailsActivity
 import tech.destinum.pruebarappi.Activities.MainActivity
 import javax.inject.Singleton
 
